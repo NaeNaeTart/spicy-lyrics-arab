@@ -818,7 +818,7 @@ async function main() {
 
         nowPlayingBar.classList.add("spicy-dynamic-bg-in-this");
 
-        await ApplyDynamicBackground(nowPlayingBar, "npvbg");
+        await ApplyDynamicBackground(nowPlayingBar, "npvbg", coverUrl);
 
         lastImgUrl = coverUrl;
       } catch (error) {
@@ -885,7 +885,12 @@ async function main() {
       const contentBox = PageContainer?.querySelector<HTMLElement>(".ContentBox");
       if (!contentBox || (Defaults.StaticBackground && Defaults.StaticBackgroundType === "Color")) return;
       try {
-        void ApplyDynamicBackground(contentBox, "lpagebg");
+        const coverFromEvent: string | undefined =
+          event?.data?.item?.metadata?.image_xlarge_url ??
+          event?.data?.item?.metadata?.image_large_url ??
+          event?.data?.item?.metadata?.image_url ??
+          undefined;
+        void ApplyDynamicBackground(contentBox, "lpagebg", coverFromEvent);
       } catch (err) {
         console.error("Error applying dynamic background:", err);
       }

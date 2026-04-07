@@ -27,10 +27,22 @@ let cachedColorBackgroundEl: HTMLElement | null = null;
 export const KawarpMap = new Map<HTMLElement | string, Kawarp>();
 const animSpeedController = new BackgroundAnimationController();
 
-export default async function ApplyDynamicBackground(element: HTMLElement, tag?: string) {
+const normalizeCoverUrl = (cover: string | undefined | null): string => {
+  const raw = (cover ?? "").trim();
+  if (!raw) return "";
+  // Spicetify sometimes yields `spotify:image:<id>`; Kawarp needs a real URL.
+  return raw.startsWith("spotify:image:")
+    ? raw.replace("spotify:image:", "https://i.scdn.co/image/")
+    : raw;
+};
+
+export default async function ApplyDynamicBackground(
+  element: HTMLElement,
+  tag?: string,
+  coverUrlOverride?: string | undefined | null
+) {
   if (!element) return;
-  const preCurrentImgCover = SpotifyPlayer.GetCover("large") ?? "";
-  const currentImgCover = preCurrentImgCover?.replace("spotify:image:", "https://i.scdn.co/image/");
+  const currentImgCover = normalizeCoverUrl(coverUrlOverride ?? SpotifyPlayer.GetCover("large"));
   const IsEpisode = SpotifyPlayer.GetContentType() === "episode";
 
   const artists = SpotifyPlayer.GetArtists() ?? [];
